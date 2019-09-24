@@ -152,7 +152,10 @@ The template includes a few files:
   of the Mender server. This topic is covered separately in [the Enterprise
   part](enterprise) of the Production installation guide
 
-!!! If an `enterprise.yml` file exists in the `config` directory, this will automatically turn on Enterprise features in the backend service. Make sure that `enterprise.yml` does not exist unless you are planning on using the Mender Enterprise server.
+!!! If an `enterprise.yml` file exists in the `config` directory, this will
+!!! automatically turn on Enterprise features in the backend service. If you
+!!! want to use the Open Source edition (not Enterprise), please remove
+!!! `enterprise.yml` from the `config` directory.
 
 At this point all changes should be committed to the repository:
 <!--AUTOMATION: execute=sed -i '0,/set-my-alias-here.com/s/set-my-alias-here.com/s3.docker.mender.io/' config/prod.yml -->
@@ -623,6 +626,10 @@ subcommand of docker-compose, e.g.:
 
 ! Keep in mind that above is executed in a command-line interpreter meaning that certain characters might need to be escaped, e.g if you are using the `$` character in your password, this could interpret as a variable name unless it is escaped.
 
+The next sections deal with installation of an Enterprise server. If you are
+installing an Open Source server, please proceed to
+[verification](#verification) now.
+
 
 ## Enterprise
 
@@ -713,31 +720,17 @@ sure to save the **tenant ID** that appears after calling the command; this will
 be the identifier for the first organization. Creating additional organizations
 works exactly the same way, so the above step may be repeated multiple times.
 
-Now fetch the **tenant token** for the new organization by calling:
+Now we need to fetch the **tenant token** for the new organization. This is
+available in the JSON output from the `get-tenant` command, in the
+`tenant_token` field. To avoid manually parsing raw JSON, we can use the `jq`
+tool:
 
+```bash
+./run exec mender-tenantadm /usr/bin/tenantadm get-tenant --id $TENANT_ID | jq -r .tenant_token
 ```
-./run exec mender-tenantadm /usr/bin/tenantadm get-tenant --id TENANT_ID
-```
 
-where `TENANT_ID` is the ID that was printed by the previous command. This will
-produce JSON output, and the **tenant token** is in the `tenant_token`
-field. See the example in bold:
-
-> {"id":"5d833532d13058002848ffdf","name":"MyTenant","tenant_token":"**eyJhbGciOiJSUzI1NiIsInR5cCI6I<br>
-kpXVCJ9.eyJtZW5kZXIudGVuYW50IjoiNWQ4MzM1MzJkMTMwNTgwMDI4NDhmZmRmIiwiaXNzIjoiTWVuZGVyIiwic3ViIjoiNWQ4<br>
-MzM1MzJkMTMwNTgwMDI4NDhmZmRmIn0.HJDGHzqZqbosAYyJpSIEeL0W4HMiOmb15ETnuChxE0i7ahW49dZZlQNJBKLkLzuESDxX<br>
-nmQbQwsSGP6t32pGkeHVXTPjrSjhtMPC80NiibNG3f-QATw9I8YgG2SBd5xaKl17qdta1nGi80T2UKrwlzqLHR7wNed10ss3NgJD<br>
-IDvrm89XO0Rg6jpFZsHCPyyK1c8-Vn8zZjW5azZLNSgtgSLSmFQguQLRRXL2x12VEcmeztFY0kJnhGtN07CD3XXxcz0BpWbevDYO<br>
-POEUusGd2KpLK2Y4QU8RdngqNtRe7SppG0fn6m6tKiifrPDAv_THCEG6dvpMHyIM77vGIPwvV4ABGhZKRAlDe1R4csJQIbhVcTWM<br>
-GcoZ4bKH-zDK0900_wWM53i9rkgNFDM470i6-d1oqfaCPcbiniKsq1HcJRZsIVNJ1edDovhQ6IbffPRCw-Au_GlnPTn_czovJqSa<br>
-3bgwrJguYRIKJGWhHgx0e3j795oJ08ks2Mp3Rshbv4da**","status":"active"}
-
-Make sure the qoutes are not included! If you have the `jq` tool installed, you
-can get the token directly by calling:
-
-```
-./run exec mender-tenantadm /usr/bin/tenantadm get-tenant --id TENANT_ID | jq -r .tenant_token
-```
+where `$TENANT_ID` is the ID that was printed by the previous command. The
+resulting tenant token will be a long string like this:
 
 > eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZW5kZXIudGVuYW50IjoiNWQ4MzM1MzJkMTMwNTgwMDI4NDhmZmRmIiwia<br>
 XNzIjoiTWVuZGVyIiwic3ViIjoiNWQ4MzM1MzJkMTMwNTgwMDI4NDhmZmRmIn0.HJDGHzqZqbosAYyJpSIEeL0W4HMiOmb15ETnu<br>
@@ -750,7 +743,8 @@ vhQ6IbffPRCw-Au_GlnPTn_czovJqSa3bgwrJguYRIKJGWhHgx0e3j795oJ08ks2Mp3Rshbv4da
 !!! On Debian based distributions you can install `jq` with the command `apt-get
 !!! install jq`.
 
-The tenant token will be used the following sections.
+Make sure that the string does not include any spaces or newlines when you copy
+it from the terminal. The tenant token will be used in the following sections.
 
 #### Choosing organization configuration
 
