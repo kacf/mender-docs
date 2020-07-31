@@ -118,7 +118,7 @@ a-country=Poland
 a-city=Krakow
 ```
 <!--AUTOVERSION: "mender/tree/%/support"/mender-->
-You can find some more useful scripts in [https://github.com/mendersoftware/mender/support](https://github.com/mendersoftware/mender/tree/master/support) directory.
+You can find some more useful scripts in [https://github.com/mendersoftware/mender/support](https://github.com/mendersoftware/mender/tree/master/support?target=_blank) directory.
 
 ## Default inventory
 
