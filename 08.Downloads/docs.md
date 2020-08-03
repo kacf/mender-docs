@@ -33,8 +33,8 @@ Mender provides images based on the following distributions:
 [raspios-buster-lite-raspberrypi4-mender.img.xz]: https://d4o6e0uccgv40.cloudfront.net/2020-05-27-raspios-buster-lite-armhf/arm/2020-05-27-raspios-buster-lite-armhf-raspberrypi4-mender-master.img.xz
 
 You can find images for other devices in our Mender Hub community forum, see
-[Debian Family](https://hub.mender.io/c/board-integrations/debian-family/11) or
-[Yocto Project](https://hub.mender.io/c/board-integrations/yocto-project/10)
+[Debian Family](https://hub.mender.io/c/board-integrations/debian-family/11?target=_blank) or
+[Yocto Project](https://hub.mender.io/c/board-integrations/yocto-project/10?target=_blank)
 integration posts.
 
 ## Mender Artifact
